@@ -1,0 +1,23 @@
+{
+    "name": "braghetto/hokoml",
+    "description": "Package to simplify the communication between the Mercado livre API and your app.",
+    "keywords": ["Mercado livre", "Mercado libre", "PHP", "Mercado livre API", "Mercado libre API"],
+    "license": "MIT",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Neto Braghetto",
+            "email": "netow93@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Braghetto\\Hokoml\\": "src/Braghetto/Hokoml/"
+        }
+    }
+}
