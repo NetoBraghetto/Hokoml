@@ -4,11 +4,42 @@ Package to simplify the communication between the Mercado livre API and your app
 
 ----------
 
-[TOC]
+# Table of Contents
+
+- [Installation](#installation)
+- [Configurations](#configs)
+- [Authentication](#authentication)
+	- [Get auth url](#get-auth-url)
+	- [Authorize](#authorize)
+- [Product](#product)
+	- [Create](#create)
+	- [Find](#find)
+	- [Update](#update)
+	- [Pause](#pause)
+	- [Unpause](#unpause)
+	- [Finalize](#finalize)
+	- [Relist](#relist)
+	- [Delete](#delete)
+- [Category](#category)
+	- [List](#list)
+	- [Predict](#predict)
+- [Questions](#fakerprovideruuid)
+	- [Ask](#ask)
+	- [Find](#find)
+	- [Answer](#answer)
+	- [Questions from product](#questions-from-product)
+	- [Unanswered from product](#unanswered-from-product)
+	- [Block user](#block-user)
+	- [Unblock user](#unblock-user)
+	- [Blocked users](#blocked-users)
+	- [Received questions](#received-questions)
+- [License](#license)
 
 ## Installation
 
-TODO: Describe the installation process
+```sh
+composer require braghetto/hokoml
+```
 
 ## Usage
 
