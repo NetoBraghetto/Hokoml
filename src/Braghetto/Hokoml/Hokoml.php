@@ -56,6 +56,13 @@ class Hokoml
     private $question;
 
     /**
+     * A User instance.
+     *
+     * @var \Braghetto\Hokoml\UserInterface
+     */
+    private $user;
+
+    /**
      * Create a new \Braghetto\Hokoml\Hokoml instance.
      *
      * @param array $config
@@ -95,6 +102,16 @@ class Hokoml
     }
 
     /**
+     * Return the auth url based on the selected country.
+     *
+     * @return string
+     */
+    public function getAuthUrl()
+    {
+        return $this->app->getAuthUrl();
+    }
+
+    /**
      * Reset the App instances.
      *
      * @return void
@@ -109,6 +126,9 @@ class Hokoml
         }
         if (isset($this->question)) {
             $this->question->refreshApp($this->app);
+        }
+        if (isset($this->user)) {
+            $this->user->refreshApp($this->app);
         }
     }
 
@@ -149,6 +169,19 @@ class Hokoml
             $this->question = new Question($this->http, $this->app);
         }
         return $this->question;
+    }
+
+    /**
+     * Return an Question instance.
+     *
+     * @return \Braghetto\Hokoml\QuestionInterface
+     */
+    public function user()
+    {
+        if (!isset($this->user)) {
+            $this->user = new User($this->http, $this->app);
+        }
+        return $this->user;
     }
 
     /**

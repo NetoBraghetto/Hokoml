@@ -1,6 +1,6 @@
 Hokoml
 ===================
-Package to simplify the communication between the Mercado livre API and your app.
+Package to simplify the integration between the Mercado livre API and your app.
 
 ----------
 
@@ -10,10 +10,11 @@ Package to simplify the communication between the Mercado livre API and your app
 - [Configurations](#configs)
 - [Authentication](#authentication)
 	- [Get auth url](#get-auth-url)
-	- [Authorize](#authorize)
+    - [Authorize](#authorize)
+	- [Refresh access token](#refresh-access-token)
 - [Product](#product)
 	- [Create](#create)
-	- [Find](#find)
+	- [Find product](#find-product)
 	- [Update](#update)
 	- [Pause](#pause)
 	- [Unpause](#unpause)
@@ -23,16 +24,21 @@ Package to simplify the communication between the Mercado livre API and your app
 - [Category](#category)
 	- [List](#list)
 	- [Predict](#predict)
-- [Questions](#fakerprovideruuid)
-	- [Ask](#ask)
-	- [Find](#find)
-	- [Answer](#answer)
-	- [Questions from product](#questions-from-product)
-	- [Unanswered from product](#unanswered-from-product)
-	- [Block user](#block-user)
-	- [Unblock user](#unblock-user)
-	- [Blocked users](#blocked-users)
-	- [Received questions](#received-questions)
+- [Questions](#questions)
+    - [Ask](#ask)
+    - [Find question](#find-question)
+    - [Answer](#answer)
+    - [Questions from product](#questions-from-product)
+    - [Unanswered from product](#unanswered-from-product)
+    - [Block user](#block-user)
+    - [Unblock user](#unblock-user)
+    - [Blocked users](#blocked-users)
+    - [Received questions](#received-questions)
+- [User](#user)
+	- [Me](#me)
+    - [Find user](#find-user)
+    - [Addresses](#addresses)
+    - [Accepted payment methods](#accepted-payment-methods)
 - [License](#license)
 
 ## Installation
@@ -41,9 +47,7 @@ Package to simplify the communication between the Mercado livre API and your app
 composer require braghetto/hokoml
 ```
 
-## Usage
-
-### Configs
+## Configs
 ```php
 <?php
 $config = [
@@ -86,7 +90,10 @@ $config = [
 ]
 ```
 
+## Usage
+
 ### Authentication
+
 #### Get auth url
 Retrive the auth to authorize your app.
 ```php
@@ -106,6 +113,16 @@ use Braghetto\Hokoml\Hokoml;
 $hokoml = new Hokoml($config);
 $response = $hokoml->authorize($_GET['code']);
 // Persist the data for future usage...
+```
+
+#### Refresh access token
+```php
+<?php
+use Braghetto\Hokoml\Hokoml;
+
+$hokoml = new Hokoml($config);
+// $refresh_token saved from your previous authorization
+$response = $hokoml->refreshAccessToken($refresh_token);
 ```
 
 ### Product
@@ -136,7 +153,7 @@ $response = $hokoml->product()->create([
 ]);
 ```
 
-#### Find
+#### Find product
 ```php
 <?php
 use Braghetto\Hokoml\Hokoml;
@@ -199,7 +216,7 @@ $response = $hokoml->product()->delete($product_id);
 <?php
 use Braghetto\Hokoml\Hokoml;
 
-$hokoml = new Hokoml($config);
+$hokoml = new Hokoml($config, $_SESSION['access_token'], $_SESSION['user_id']);
 // List all root categories
 $response = $hokoml->category()->list();
 
@@ -222,11 +239,11 @@ $response = $hokoml->category()->predict('Rayban Gloss Black');
 <?php
 use Braghetto\Hokoml\Hokoml;
 
-$hokoml = new Hokoml($config);
+$hokoml = new Hokoml($config, $_SESSION['access_token'], $_SESSION['user_id']);
 $response = $hokoml->question()->ask($question_id, 'The questions.');
 ```
 
-#### Find
+#### Find question
 ```php
 <?php
 // [...]
@@ -300,6 +317,40 @@ $response = $hokoml->question()->received([
 
 //With filters and sorting
 $response = $hokoml->question()->received(['status' => 'unanswered'], 'date_desc');
+```
+
+### User
+
+#### Me
+```php
+<?php
+use Braghetto\Hokoml\Hokoml;
+
+$hokoml = new Hokoml($config, $_SESSION['access_token'], $_SESSION['user_id']);
+$response = $hokoml->user()->me();
+```
+
+#### Find user
+```php
+<?php
+[...]
+$response = $hokoml->user()->find($user_id);
+```
+
+#### Addresses
+Retrive the authenticated user addresses.
+```php
+<?php
+[...]
+$response = $hokoml->user()->addresses();
+```
+
+#### Accepted payment methods
+Retrive payment methods accepted by the authenticated user.
+```php
+<?php
+[...]
+$response = $hokoml->user()->acceptedPaymentMethods();
 ```
 
 ## License

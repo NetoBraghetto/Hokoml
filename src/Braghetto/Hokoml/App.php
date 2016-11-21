@@ -172,7 +172,7 @@ class App implements AppInterface
     {
         if ($response['http_code'] === 200) {
             $this->access_token = $response['body']['access_token'];
-            $this->seller_id = $response['body']['seller_id'];
+            $this->seller_id = $response['body']['user_id'];
         }
     }
 
