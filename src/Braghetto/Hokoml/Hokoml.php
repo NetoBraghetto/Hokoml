@@ -133,7 +133,17 @@ class Hokoml
     }
 
     /**
-     * Return an Product instance.
+     * Return an App instance.
+     *
+     * @return \Braghetto\Hokoml\ProductInterface
+     */
+    public function app()
+    {
+        return $this->app;
+    }
+
+    /**
+     * Return a Product instance.
      *
      * @return \Braghetto\Hokoml\ProductInterface
      */
@@ -146,7 +156,7 @@ class Hokoml
     }
 
     /**
-     * Return an Category instance.
+     * Return a Category instance.
      *
      * @return \Braghetto\Hokoml\CategoryInterface
      */
@@ -159,7 +169,7 @@ class Hokoml
     }
 
     /**
-     * Return an Question instance.
+     * Return a Question instance.
      *
      * @return \Braghetto\Hokoml\QuestionInterface
      */
@@ -172,9 +182,9 @@ class Hokoml
     }
 
     /**
-     * Return an Question instance.
+     * Return an User instance.
      *
-     * @return \Braghetto\Hokoml\QuestionInterface
+     * @return \Braghetto\Hokoml\UserInterface
      */
     public function user()
     {
