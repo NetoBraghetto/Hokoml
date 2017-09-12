@@ -70,6 +70,17 @@ class Category implements CategoryInterface, AppRefreshableInterface
     }
 
     /**
+     * Return a Mercado livre category prediction based on the title.
+     *
+     * @param string $title
+     * @return array
+     */
+    public function attributes($category_id)
+    {
+        return $this->http->get($this->api_url . '/categories/' . $category_id . '/attributes');
+    }
+
+    /**
      * Refresh the App instance.
      *
      * @return void

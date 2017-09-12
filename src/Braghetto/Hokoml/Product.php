@@ -147,6 +147,17 @@ class Product implements ProductInterface, AppRefreshableInterface
     }
 
     /**
+     * Get a list of Mercado livre listing types.
+     *
+     * @return array with body and http_code keys.
+     */
+
+    public function listingTypes()
+    {
+        return $this->http->get($this->api_url . '/sites/' . $this->app->getCountry() . '/listing_types');
+    }
+
+    /**
      * Refresh the App instance.
      *
      * @return void
