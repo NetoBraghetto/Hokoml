@@ -158,6 +158,21 @@ class Product implements ProductInterface, AppRefreshableInterface
     }
 
     /**
+     * Update the variations of a product.
+     *
+     * @param string $id
+     * @param array $variations
+     * @return array with body and http_code keys.
+     */
+
+    public function updateVariations($id, array $variations)
+    {
+        return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], [
+            'variations' => $variations
+        ]);
+    }
+
+    /**
      * Refresh the App instance.
      *
      * @return void
