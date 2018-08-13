@@ -29,6 +29,22 @@ class Product implements ProductInterface, AppRefreshableInterface
     private $app;
 
     /**
+     * Allowed fileds to update.
+     *
+     * @var array
+     */
+    private $allowed_changes = [
+        'title',
+        'available_quantity',
+        'price',
+        'video',
+        'pictures',
+        'description',
+        'shipping',
+        'variations',
+    ];
+
+    /**
      * Create a new \Braghetto\Hokoml\Product instance.
      *
      * @param \Braghetto\Hokoml\HttpClientInterface $http_client
@@ -60,9 +76,25 @@ class Product implements ProductInterface, AppRefreshableInterface
      * @param array $changes
      * @return array with body and http_code keys.
      */
-    public function update($id, array $changes)
+    public function update($id, array $changes, $filterChanges = true)
     {
+        if ($filterChanges) {
+            $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
+        }
         return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], $changes);
+    }
+
+    /**
+     * Update a product.
+     *
+     * @param string $id
+     * @param array $changes
+     * @return array with body and http_code keys.
+     */
+    public function updateVariation($id, $product_id, array $changes)
+    {
+        $url = $this->api_url . '/items/' . $product_id . '/variations/' . $id;
+        return $this->http->put($url, ['access_token' => $this->app->getAccessToken()], $changes);
     }
 
     /**
