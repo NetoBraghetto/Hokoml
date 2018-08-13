@@ -163,12 +163,14 @@ $response = $hokoml->product()->find($product_id);
 ```
 
 #### Update
+Not all information can be update, so the packge will filter those info. [Details here](https://developers.mercadolibre.com/en_us/products-sync-listings)
 ```php
 <?php
 // [...]
 $response = $hokoml->product()->update($product_id, [
     'title' => 'Milibin',
     'price' => 800000,
+    'warranty' => 'New warranty', // Won't be updated
     // [...]
 ]);
 ```
