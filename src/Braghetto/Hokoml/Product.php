@@ -80,8 +80,31 @@ class Product implements ProductInterface, AppRefreshableInterface
     {
         if ($filterChanges) {
             $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
+
+            if (isset($changes['description'])) {
+                $resp = $this->updateDescription($id, ['description' => $changes['description']]);
+                unset($changes['description']);
+                if ($resp['http_code'] !== 200) {
+                    return $resp;
+                }
+            }
+
+            $changes = $this->stripeNotModifiableFields($changes);
         }
+
         return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], $changes);
+    }
+
+    /**
+     * Update a product description.
+     *
+     * @param string $id
+     * @param array $description
+     * @return array with body and http_code keys.
+     */
+    public function updateDescription(string $id, array $description)
+    {
+        return $this->http->put($this->api_url . '/items/' . $id . '/description', ['access_token' => $this->app->getAccessToken()], $description);
     }
 
     /**
@@ -212,5 +235,32 @@ class Product implements ProductInterface, AppRefreshableInterface
     public function refreshApp($app)
     {
         $this->app = $app;
+    }
+
+    /**
+     * Strie unecessary|not modifiable fields
+     *
+     * @return array $data
+     */
+    private function stripeNotModifiableFields($changes)
+    {
+        if (isset($changes['variations'])) {
+            if (isset($changes['available_quantity'])) {
+                unset($changes['available_quantity']);
+            }
+            if (isset($changes['price'])) {
+                unset($changes['price']);
+            }
+        }
+
+        if (isset($changes['shipping'])) {
+            if (isset($changes['shipping']['tags'])) {
+                unset($changes['shipping']['tags']);
+            }
+            if (empty($changes['shipping']['dimensions'])) {
+                unset($changes['shipping']['dimensions']);
+            }
+        }
+        return $changes;
     }
 }
