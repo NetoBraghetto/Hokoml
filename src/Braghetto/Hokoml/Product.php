@@ -42,6 +42,7 @@ class Product implements ProductInterface, AppRefreshableInterface
         'description',
         'shipping',
         'variations',
+        'status',
     ];
 
     /**
