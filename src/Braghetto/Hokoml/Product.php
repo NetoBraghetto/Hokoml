@@ -83,7 +83,7 @@ class Product implements ProductInterface, AppRefreshableInterface
             $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
 
             if (isset($changes['description'])) {
-                $resp = $this->updateDescription($id, ['description' => $changes['description']]);
+                $resp = $this->updateDescription($id, $changes['description']);
                 unset($changes['description']);
                 if ($resp['http_code'] !== 200) {
                     return $resp;
