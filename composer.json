@@ -19,5 +19,16 @@
         "psr-4": {
             "Braghetto\\Hokoml\\": "src/Braghetto/Hokoml/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hokoml\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit"
     }
 }
