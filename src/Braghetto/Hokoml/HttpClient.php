@@ -37,7 +37,7 @@ class HttpClient implements HttpClientInterface
     public function __construct($production = true, $response_as_array = true)
     {
         $this->common_curl_ops[CURLOPT_SSL_VERIFYPEER] = $production;
-        $this->common_curl_ops[CURLOPT_VERBOSE] = !$production;
+        // $this->common_curl_ops[CURLOPT_VERBOSE] = !$production;
         $this->response_as_array = $response_as_array;
     }
 

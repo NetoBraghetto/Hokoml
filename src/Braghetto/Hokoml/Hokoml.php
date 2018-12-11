@@ -3,7 +3,6 @@ namespace Braghetto\Hokoml;
 
 use Braghetto\Hokoml\App;
 use Braghetto\Hokoml\Product;
-use Braghetto\Hokoml\Category;
 use Braghetto\Hokoml\Question;
 use Braghetto\Hokoml\HttpClient;
 
@@ -40,13 +39,6 @@ class Hokoml
      * @var \Braghetto\Hokoml\ProductInterface
      */
     private $product;
-
-    /**
-     * A Category instance.
-     *
-     * @var \Braghetto\Hokoml\CategoryInterface
-     */
-    private $category;
 
     /**
      * A Question instance.
@@ -121,9 +113,6 @@ class Hokoml
         if (isset($this->product)) {
             $this->product->refreshApp($this->app);
         }
-        if (isset($this->category)) {
-            $this->category->refreshApp($this->app);
-        }
         if (isset($this->question)) {
             $this->question->refreshApp($this->app);
         }
@@ -153,19 +142,6 @@ class Hokoml
             $this->product = new Product($this->http, $this->app);
         }
         return $this->product;
-    }
-
-    /**
-     * Return a Category instance.
-     *
-     * @return \Braghetto\Hokoml\CategoryInterface
-     */
-    public function category()
-    {
-        if (!isset($this->category)) {
-            $this->category = new Category($this->http, $this->app);
-        }
-        return $this->category;
     }
 
     /**
