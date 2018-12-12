@@ -191,9 +191,9 @@ class App implements AppInterface
      *
      * @return string
      */
-    public function getApiUrl()
+    public function getApiUrl(string $append = '')
     {
-        return $this->api_url;
+        return $this->api_url . $append;
     }
 
     /**

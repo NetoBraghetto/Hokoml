@@ -7,9 +7,11 @@ namespace Braghetto\Hokoml;
 
 interface ProductInterface
 {
-    public function find($id);
+    // public function validate(array $data);
 
-    public function create(array $item);
+    // public function find($id);
 
-    public function update($id, array $changes);
+    // public function create(array $item);
+
+    // public function update($id, array $changes);
 }

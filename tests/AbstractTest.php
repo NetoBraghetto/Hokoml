@@ -15,10 +15,12 @@ abstract class AbstractTest extends TestCase
     public function __construct() {
         parent::__construct();
         $config = require __DIR__ . '/web/config.php';
-        $this->hokoml = new Hokoml($config);
         if (!file_exists($this->sessionPath)) {
             file_put_contents($this->sessionPath, '[]');
         }
+        $this->session = json_decode(file_get_contents($this->sessionPath), true);
+
+        $this->hokoml = new Hokoml($config, $this->session['mercado_livre']['access_token'], $this->session['mercado_livre']['user_id']);
     }
 
     public function setUp()
