@@ -36,7 +36,7 @@ class Hokoml
     /**
      * A Product instance.
      *
-     * @var \Braghetto\Hokoml\ProductInterface
+     * @var \Braghetto\Hokoml\Product
      */
     private $product;
 

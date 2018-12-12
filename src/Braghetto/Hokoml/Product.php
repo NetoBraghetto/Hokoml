@@ -5,15 +5,8 @@ namespace Braghetto\Hokoml;
 * Product
 */
 
-class Product implements ProductInterface, AppRefreshableInterface
+class Product implements AppRefreshableInterface
 {
-    // /**
-    //  * The api base url.
-    //  *
-    //  * @var string
-    //  */
-    // private $api_url;
-
     /**
      * The http client.
      *
@@ -56,7 +49,6 @@ class Product implements ProductInterface, AppRefreshableInterface
     {
         $this->http = $http_client;
         $this->app = $app;
-        // $this->api_url = $this->app->getApiUrl();
     }
 
     /**
@@ -70,16 +62,16 @@ class Product implements ProductInterface, AppRefreshableInterface
         return $this->http->post($this->app->getApiUrl('/items/validate'), ['access_token' => $this->app->getAccessToken()], $data);
     }
 
-    // /**
-    //  * Create a new product.
-    //  *
-    //  * @param array $item
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function create(array $item)
-    // {
-    //     return $this->http->post($this->api_url . '/items', ['access_token' => $this->app->getAccessToken()], $item);
-    // }
+    /**
+     * Create a new product.
+     *
+     * @param array $data
+     * @return array with body and http_code keys.
+     */
+    public function create(array $data)
+    {
+        return $this->http->post($this->app->getApiUrl('/items'), ['access_token' => $this->app->getAccessToken()], $data);
+    }
 
     // /**
     //  * Update a product.
