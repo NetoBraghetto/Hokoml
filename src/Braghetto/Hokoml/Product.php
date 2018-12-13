@@ -73,31 +73,30 @@ class Product implements AppRefreshableInterface
         return $this->http->post($this->app->getApiUrl('/items'), ['access_token' => $this->app->getAccessToken()], $data);
     }
 
-    // /**
-    //  * Update a product.
-    //  *
-    //  * @param string $id
-    //  * @param array $changes
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function update($id, array $changes, $filterChanges = true)
-    // {
-    //     if ($filterChanges) {
-    //         $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
+    /**
+     * Update a product.
+     *
+     * @param string $id
+     * @param array $changes
+     * @return array with body and http_code keys.
+     */
+    public function update($id, array $changes, $filterChanges = true)
+    {
+        // if ($filterChanges) {
+        //     $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
 
-    //         if (isset($changes['description'])) {
-    //             $resp = $this->updateDescription($id, $changes['description']);
-    //             unset($changes['description']);
-    //             if ($resp['http_code'] !== 200) {
-    //                 return $resp;
-    //             }
-    //         }
+        //     if (isset($changes['description'])) {
+        //         $resp = $this->updateDescription($id, $changes['description']);
+        //         unset($changes['description']);
+        //         if ($resp['http_code'] !== 200) {
+        //             return $resp;
+        //         }
+        //     }
 
-    //         $changes = $this->stripeNotModifiableFields($changes);
-    //     }
-
-    //     return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], $changes);
-    // }
+        //     $changes = $this->stripeNotModifiableFields($changes);
+        // }
+        return $this->http->put($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()], $changes);
+    }
 
     // /**
     //  * Update a product description.
@@ -135,75 +134,75 @@ class Product implements AppRefreshableInterface
     //     return $this->http->get($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()]);
     // }
 
-    // /**
-    //  * Pause a active product.
-    //  *
-    //  * @param string $id
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function pause($id)
-    // {
-    //     return $this->update($id, [
-    //         'status' => 'paused'
-    //     ]);
-    // }
+    /**
+     * Pause a active product.
+     *
+     * @param string $id
+     * @return array with body and http_code keys.
+     */
+    public function pause($id)
+    {
+        return $this->update($id, [
+            'status' => 'paused'
+        ]);
+    }
 
-    // /**
-    //  * Unpause a paused product.
-    //  *
-    //  * @param string $id
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function unpause($id)
-    // {
-    //     return $this->update($id, [
-    //         'status' => 'active'
-    //     ]);
-    // }
+    /**
+     * Unpause a paused product.
+     *
+     * @param string $id
+     * @return array with body and http_code keys.
+     */
+    public function unpause($id)
+    {
+        return $this->update($id, [
+            'status' => 'active'
+        ]);
+    }
 
-    // /**
-    //  * Finalize active|paused product.
-    //  *
-    //  * @param string $id
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function finalize($id)
-    // {
-    //     return $this->update($id, [
-    //         'status' => 'closed'
-    //     ]);
-    // }
+    /**
+     * Finalize active|paused product.
+     *
+     * @param string $id
+     * @return array with body and http_code keys.
+     */
+    public function finalize($id)
+    {
+        return $this->update($id, [
+            'status' => 'closed'
+        ]);
+    }
 
-    // /**
-    //  * Relist finalized products.
-    //  *
-    //  * @param string $id
-    //  * @param float $price
-    //  * @param int $quantity
-    //  * @param string $listing_type access https://api.mercadolibre.com/sites/MLB/listing_types to get a list.
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function relist($id, $price, $quantity = 1, $listing_type = 'free')
-    // {
-    //     return $this->http->post($this->api_url . '/items/' . $id . '/relist', ['access_token' => $this->app->getAccessToken()], [
-    //         'price' => $price,
-    //         'quantity' => $quantity,
-    //         'listing_type_id' => $listing_type,
-    //     ]);
-    // }
+    /**
+     * Relist finalized products.
+     *
+     * @param string $id
+     * @param float $price
+     * @param int $quantity
+     * @param string $listing_type access https://api.mercadolibre.com/sites/MLB/listing_types to get a list.
+     * @return array with body and http_code keys.
+     */
+    public function relist($id, $price, $quantity = 1, $listing_type = 'free')
+    {
+        return $this->http->post($this->app->getApiUrl("/items/{$id}/relist"), ['access_token' => $this->app->getAccessToken()], [
+            'price' => $price,
+            'quantity' => $quantity,
+            'listing_type_id' => $listing_type,
+        ]);
+    }
 
-    // /**
-    //  * Delete a finalized product.
-    //  *
-    //  * @param string $id
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function delete($id)
-    // {
-    //     return $this->update($id, [
-    //         'deleted' => true
-    //     ]);
-    // }
+    /**
+     * Delete a finalized product.
+     *
+     * @param string $id
+     * @return array with body and http_code keys.
+     */
+    public function delete($id)
+    {
+        return $this->update($id, [
+            'deleted' => true
+        ]);
+    }
 
     // /**
     //  * Update the variations of a product.

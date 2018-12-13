@@ -3,6 +3,8 @@ namespace Hokoml\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Braghetto\Hokoml\Hokoml;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 abstract class AbstractTest extends TestCase
 {
@@ -50,5 +52,13 @@ abstract class AbstractTest extends TestCase
                 'user_id' => $response['body']['user_id'],
             ];
         }
+    }
+
+    protected function dump($response)
+    {
+        $cloner = new VarCloner();
+        $dumper = new CliDumper();
+
+        $dumper->dump($cloner->cloneVar($response));exit;
     }
 }
