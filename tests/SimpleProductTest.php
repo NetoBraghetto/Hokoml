@@ -2,7 +2,7 @@
 
 namespace Hokoml\Tests;
 
-class ProductTest extends AbstractTest
+class SimpleProductTest extends AbstractTest
 {
     private $productData = [
         'title' => 'Lâmpada edson amarela',
