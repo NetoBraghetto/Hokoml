@@ -98,6 +98,35 @@ class Product implements AppRefreshableInterface
         return $this->http->put($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()], $changes);
     }
 
+    /**
+     * Update a product price.
+     *
+     * @param string $id
+     * @param float $price
+     * @return array with body and http_code keys.
+     */
+    public function updatePrice(string $id, float $price)
+    {
+        $response = $this->find($id);
+        if ($response['http_code'] !== 200) {
+            return $response;
+        }
+        $product = $response['body'];
+        $data = [];
+        if (empty($product['variations'])) {
+            $data = ['price' => $price];
+        } else {
+            $data = ['variations' => []];
+            foreach ($product['variations'] as $variation) {
+                $data['variations'][] = [
+                    'id' => $variation['id'],
+                    'price' => $price,
+                ];
+            }
+        }
+        return $this->update($id, $data);
+    }
+
     // /**
     //  * Update a product description.
     //  *
@@ -123,16 +152,16 @@ class Product implements AppRefreshableInterface
     //     return $this->http->put($url, ['access_token' => $this->app->getAccessToken()], $changes);
     // }
 
-    // /**
-    //  * Search for a product.
-    //  *
-    //  * @param string $id
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function find($id)
-    // {
-    //     return $this->http->get($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()]);
-    // }
+    /**
+     * Search for a product.
+     *
+     * @param string $id
+     * @return array with body and http_code keys.
+     */
+    public function find($id)
+    {
+        return $this->http->get($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()]);
+    }
 
     /**
      * Pause a active product.

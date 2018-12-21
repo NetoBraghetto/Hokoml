@@ -138,6 +138,21 @@ class ProductWithVariationTest extends AbstractTest
         }
     }
 
+    public function testUpdateProdutVariationsPrice()
+    {
+        $hokoProduct = $this->hokoml->product();
+
+        if (!empty($this->session['product_with_variations_id'])) {
+            $newPrice = 7577.32;
+            $response = $hokoProduct->updatePrice($this->session['product_with_variations_id'], $newPrice);
+            $this->assertArrayHasKey('http_code', $response);
+            $this->assertArrayHasKey('body', $response);
+            $this->assertEquals(200, $response['http_code']);
+            $this->assertNotEmpty($response['body']['variations']);
+            $this->assertEquals($newPrice, $response['body']['variations'][0]['price']);
+        }
+    }
+
     // public function testUpdateProdut()
     // {
     //     $hokoProduct = $this->hokoml->product();
