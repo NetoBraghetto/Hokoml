@@ -26,17 +26,17 @@ class Product implements AppRefreshableInterface
      *
      * @var array
      */
-    // private $allowed_changes = [
-    //     'title',
-    //     'available_quantity',
-    //     'price',
-    //     'video',
-    //     'pictures',
-    //     'description',
-    //     'shipping',
-    //     'variations',
-    //     'status',
-    // ];
+    private $allowed_changes = [
+        'title',
+        'available_quantity',
+        'price',
+        'video',
+        'pictures',
+        'description',
+        'shipping',
+        'variations',
+        'status',
+    ];
 
     /**
      * Create a new \Braghetto\Hokoml\Product instance.
@@ -82,20 +82,25 @@ class Product implements AppRefreshableInterface
      */
     public function update($id, array $changes, $filterChanges = true)
     {
-        // if ($filterChanges) {
-        //     $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
+        if ($filterChanges) {
+            $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
 
-        //     if (isset($changes['description'])) {
-        //         $resp = $this->updateDescription($id, $changes['description']);
-        //         unset($changes['description']);
-        //         if ($resp['http_code'] !== 200) {
-        //             return $resp;
-        //         }
-        //     }
-
-        //     $changes = $this->stripeNotModifiableFields($changes);
-        // }
-        return $this->http->put($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()], $changes);
+            if (isset($changes['description'])) {
+                $descriptionResponse = $this->updateDescription($id, $changes['description']);
+                unset($changes['description']);
+                if ($descriptionResponse['http_code'] !== 200 || empty($changes)) {
+                    return $descriptionResponse;
+                }
+            }
+        }
+        $response = $this->http->put($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()], $changes);
+        if ($response['http_code'] !== 200) {
+            return $response;
+        }
+        if (isset($descriptionResponse)) {
+            $response['body']['descriptions']['plain_text'] = $descriptionResponse['body']['plain_text'];
+        }
+        return $response;
     }
 
     /**
@@ -127,17 +132,17 @@ class Product implements AppRefreshableInterface
         return $this->update($id, $data);
     }
 
-    // /**
-    //  * Update a product description.
-    //  *
-    //  * @param string $id
-    //  * @param array $description
-    //  * @return array with body and http_code keys.
-    //  */
-    // public function updateDescription(string $id, array $description)
-    // {
-    //     return $this->http->put($this->api_url . '/items/' . $id . '/description', ['access_token' => $this->app->getAccessToken()], $description);
-    // }
+    /**
+     * Update a product description.
+     *
+     * @param string $id
+     * @param array $description
+     * @return array with body and http_code keys.
+     */
+    public function updateDescription(string $id, array $description)
+    {
+        return $this->http->put($this->app->getApiUrl("/items/{$id}/description"), ['access_token' => $this->app->getAccessToken()], $description);
+    }
 
     // /**
     //  * Update a product.
@@ -246,33 +251,6 @@ class Product implements AppRefreshableInterface
     //     return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], [
     //         'variations' => $variations
     //     ]);
-    // }
-
-    // /**
-    //  * Strie unecessary|not modifiable fields
-    //  *
-    //  * @return array $data
-    //  */
-    // private function stripeNotModifiableFields($changes)
-    // {
-    //     if (isset($changes['variations'])) {
-    //         if (isset($changes['available_quantity'])) {
-    //             unset($changes['available_quantity']);
-    //         }
-    //         if (isset($changes['price'])) {
-    //             unset($changes['price']);
-    //         }
-    //     }
-
-    //     if (isset($changes['shipping'])) {
-    //         if (isset($changes['shipping']['tags'])) {
-    //             unset($changes['shipping']['tags']);
-    //         }
-    //         if (empty($changes['shipping']['dimensions'])) {
-    //             unset($changes['shipping']['dimensions']);
-    //         }
-    //     }
-    //     return $changes;
     // }
 
     
