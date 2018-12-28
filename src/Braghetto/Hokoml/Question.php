@@ -5,7 +5,7 @@ namespace Braghetto\Hokoml;
 * Question
 */
 
-class Question implements QuestionInterface, AppRefreshableInterface
+class Question implements AppRefreshableInterface
 {
     /**
      * The api base url.
@@ -62,7 +62,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function ask($product_id, $question)
     {
-        return $this->http->post($this->api_url . '/questions/' . $product_id, ['access_token' => $this->app->getAccessToken()], [
+        return $this->http->post($this->app->getApiUrl("/questions/{$product_id}"), ['access_token' => $this->app->getAccessToken()], [
             'text' => $question,
             'item_id' => $product_id
         ]);

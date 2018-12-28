@@ -36,6 +36,7 @@ class Product implements AppRefreshableInterface
         'shipping',
         'variations',
         'status',
+        'deleted',
     ];
 
     /**
@@ -237,21 +238,6 @@ class Product implements AppRefreshableInterface
             'deleted' => true
         ]);
     }
-
-    // /**
-    //  * Update the variations of a product.
-    //  *
-    //  * @param string $id
-    //  * @param array $variations
-    //  * @return array with body and http_code keys.
-    //  */
-
-    // public function updateVariations($id, array $variations)
-    // {
-    //     return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], [
-    //         'variations' => $variations
-    //     ]);
-    // }
 
     
     /**
