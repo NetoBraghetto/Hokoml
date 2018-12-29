@@ -115,184 +115,190 @@ class ProductWithVariationTest extends AbstractTest
 
     public function testListProdut()
     {
+        if ($this->isProductListed()) {
+            return;
+        }
+
         $hokoProduct = $this->hokoml->product();
         $response = $hokoProduct->validate($this->productData);
-        if ($response['http_code'] !== 204) {
-            $this->dump($response);
-        }
-        $this->assertEquals(204, $response['http_code']); // supress the Risk warn
+        $this->assertEquals(204, $response['http_code']);
 
-        if (!$this->isProductListed()) {
-            $response = $hokoProduct->create($this->productData);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(201, $response['http_code']);
-            $this->assertEquals(count($this->productData['variations']), count($response['body']['variations']));
-            $this->session['product_with_variations'] = [
-                'id' => $response['body']['id'],
-            ];
-            $this->setSessionProductData($response['body']);
-        }
+        $response = $hokoProduct->create($this->productData);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(201, $response['http_code']);
+        $this->assertEquals(count($this->productData['variations']), count($response['body']['variations']));
+        $this->session['product_with_variations'] = [
+            'id' => $response['body']['id'],
+        ];
+        $this->setSessionProductData($response['body']);
     }
 
     public function testUpdateProdutVariationsPrice()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $newPrice = 7577.32;
-            $response = $hokoProduct->updatePrice($this->session['product_with_variations']['id'], $newPrice);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertNotEmpty($response['body']['variations']);
-            $this->assertEquals($newPrice, $response['body']['variations'][0]['price']);
-            $this->setSessionProductData($response['body']);
-        }
+        $newPrice = 7577.32;
+        $response = $hokoProduct->updatePrice($this->session['product_with_variations']['id'], $newPrice);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertNotEmpty($response['body']['variations']);
+        $this->assertEquals($newPrice, $response['body']['variations'][0]['price']);
+        $this->setSessionProductData($response['body']);
     }
 
     public function testUpdateProdutVariationsStock()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $newStocks = [];
-            foreach ($this->session['product_with_variations']['variations'] as $variation) {
-                $newStocks[] = [
-                    'id' => $variation['id'],
-                    'available_quantity' => 4,
-                ];
-            }
-            $response = $hokoProduct->update($this->session['product_with_variations']['id'], [
-                'variations' => $newStocks
-            ]);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertNotEmpty($response['body']['variations']);
-            $variation_ids = array_column($response['body']['variations'], 'id');
-            foreach ($newStocks as $variationStock) {
-                $index = array_search($variationStock['id'], $variation_ids);
-                $this->assertNotFalse($index);
-                $this->assertEquals($variationStock['id'], $response['body']['variations'][$index]['id']);
-                $this->assertEquals($variationStock['available_quantity'], $response['body']['variations'][$index]['available_quantity']);
-            }
+        $newStocks = [];
+        foreach ($this->session['product_with_variations']['variations'] as $variation) {
+            $newStocks[] = [
+                'id' => $variation['id'],
+                'available_quantity' => 4,
+            ];
+        }
+        $response = $hokoProduct->update($this->session['product_with_variations']['id'], [
+            'variations' => $newStocks
+        ]);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertNotEmpty($response['body']['variations']);
+        $variation_ids = array_column($response['body']['variations'], 'id');
+        foreach ($newStocks as $variationStock) {
+            $index = array_search($variationStock['id'], $variation_ids);
+            $this->assertNotFalse($index);
+            $this->assertEquals($variationStock['id'], $response['body']['variations'][$index]['id']);
+            $this->assertEquals($variationStock['available_quantity'], $response['body']['variations'][$index]['available_quantity']);
         }
     }
 
     public function testUpdateDescriptionOnlyByUpateMethod()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $changes = [
-                'description' => ['plain_text' => 'New Description 1']
-            ];
-            $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertEquals($changes['description']['plain_text'], $response['body']['plain_text']);
-        }
+        $changes = [
+            'description' => ['plain_text' => 'New Description 1']
+        ];
+        $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertEquals($changes['description']['plain_text'], $response['body']['plain_text']);
     }
 
     public function testUpdateProductWithDescription()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $changes = [
-                'title' => 'Sandália Feminina Beira Rio Flatform Nude UPDATED',
-                'description' => ['plain_text' => 'New Description 2']
-            ];
-            $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertEquals(mb_strtolower($changes['title']), mb_strtolower($response['body']['title']));
-            $this->assertEquals($changes['description']['plain_text'], $response['body']['descriptions']['plain_text']);
-        }
+        $changes = [
+            'title' => 'Sandália Feminina Beira Rio Flatform Nude UPDATED',
+            'description' => ['plain_text' => 'New Description 2']
+        ];
+        $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertEquals(mb_strtolower($changes['title']), mb_strtolower($response['body']['title']));
+        $this->assertEquals($changes['description']['plain_text'], $response['body']['descriptions']['plain_text']);
     }
 
     public function testUpdateDescriptionOnlyByUpateDescriptionMethod()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $newDescription = ['plain_text' => 'New Description 3'];
-            $response = $hokoProduct->updateDescription($this->session['product_with_variations']['id'], $newDescription);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertEquals($newDescription['plain_text'], $response['body']['plain_text']);
-        }
+        $newDescription = ['plain_text' => 'New Description 3'];
+        $response = $hokoProduct->updateDescription($this->session['product_with_variations']['id'], $newDescription);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertEquals($newDescription['plain_text'], $response['body']['plain_text']);
     }
 
     public function testUpdateAddNewVariation()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $changes = [
-                'pictures' => $this->session['product_with_variations']['pictures'],
-                'variations' => [],
-            ];
-            foreach ($this->session['product_with_variations']['variations'] as $variation) {
-                $changes['variations'][] = [
-                    'id' => $variation['id']
-                ];
-            }
-            // Add new variations after ids matters
-            $changes['pictures'][] = ['source' => 'http://placehold.it/1200x1200/fb8d00/000000?text=Var4A'];
-            $changes['pictures'][] = ['source' => 'http://placehold.it/1200x1200/fb8d00/000000?text=Var4B'];
+        $changes = [
+            'pictures' => $this->session['product_with_variations']['pictures'],
+            'variations' => [],
+        ];
+        foreach ($this->session['product_with_variations']['variations'] as $variation) {
             $changes['variations'][] = [
-                'price' => $this->session['product_with_variations']['variations'][0]['price'],
-                'available_quantity' => 8,
-                'attribute_combinations' => [
-                    ['id' => 'COLOR', 'value_id' => null, 'value_name' => 'Laranja'],
-                    ['id' => 'SIZE', 'value_id' => null, 'value_name' => '40'],
-                ],
-                'attributes' => [
-                    ['id' => 'MAIN_COLOR', 'value_id' => '2450327', 'value_name' => 'Laranja'],
-                    ['id' => 'GTIN', 'value_id' => '7892758644922', 'value_name' => '7892758644922'],
-                ],
-                'picture_ids' => [
-                    'http://placehold.it/1200x1200/fb8d00/000000?text=Var4A',
-                    'http://placehold.it/1200x1200/fb8d00/000000?text=Var4B',
-                ],
+                'id' => $variation['id']
             ];
-            $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertEquals(count($changes['variations']), count($response['body']['variations']));
-            $this->setSessionProductData($response['body']);
         }
+        // Add new variations after ids matters
+        $changes['pictures'][] = ['source' => 'http://placehold.it/1200x1200/fb8d00/000000?text=Var4A'];
+        $changes['pictures'][] = ['source' => 'http://placehold.it/1200x1200/fb8d00/000000?text=Var4B'];
+        $changes['variations'][] = [
+            'price' => $this->session['product_with_variations']['variations'][0]['price'],
+            'available_quantity' => 8,
+            'attribute_combinations' => [
+                ['id' => 'COLOR', 'value_id' => null, 'value_name' => 'Laranja'],
+                ['id' => 'SIZE', 'value_id' => null, 'value_name' => '40'],
+            ],
+            'attributes' => [
+                ['id' => 'MAIN_COLOR', 'value_id' => '2450327', 'value_name' => 'Laranja'],
+                ['id' => 'GTIN', 'value_id' => '7892758644922', 'value_name' => '7892758644922'],
+            ],
+            'picture_ids' => [
+                'http://placehold.it/1200x1200/fb8d00/000000?text=Var4A',
+                'http://placehold.it/1200x1200/fb8d00/000000?text=Var4B',
+            ],
+        ];
+        $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertEquals(count($changes['variations']), count($response['body']['variations']));
+        $this->setSessionProductData($response['body']);
     }
 
     public function testUpdateRemoveVariation()
     {
+        if (!$this->isProductListed()) {
+            return;
+        }
         $hokoProduct = $this->hokoml->product();
 
-        if ($this->isProductListed()) {
-            $changes = [
-                'pictures' => $this->session['product_with_variations']['pictures'],
-                'variations' => [],
+        $changes = [
+            'pictures' => $this->session['product_with_variations']['pictures'],
+            'variations' => [],
+        ];
+        foreach ($this->session['product_with_variations']['variations'] as $variation) {
+            $changes['variations'][] = [
+                'id' => $variation['id']
             ];
-            foreach ($this->session['product_with_variations']['variations'] as $variation) {
-                $changes['variations'][] = [
-                    'id' => $variation['id']
-                ];
-            }
-            $changes['pictures'] = array_slice($changes['pictures'], 0, -2);
-            $changes['variations'] = array_slice($changes['variations'], 0, -1);
-            $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
-            $this->assertArrayHasKey('http_code', $response);
-            $this->assertArrayHasKey('body', $response);
-            $this->assertEquals(200, $response['http_code']);
-            $this->assertEquals(count($changes['variations']), count($response['body']['variations']));
-            $this->setSessionProductData($response['body']);
         }
+        $changes['pictures'] = array_slice($changes['pictures'], 0, -2);
+        $changes['variations'] = array_slice($changes['variations'], 0, -1);
+        $response = $hokoProduct->update($this->session['product_with_variations']['id'], $changes);
+        $this->assertArrayHasKey('http_code', $response);
+        $this->assertArrayHasKey('body', $response);
+        $this->assertEquals(200, $response['http_code']);
+        $this->assertEquals(count($changes['variations']), count($response['body']['variations']));
+        $this->setSessionProductData($response['body']);
     }
 
     private function isProductListed()

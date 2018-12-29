@@ -3,6 +3,7 @@
          backupStaticAttributes="false"
          bootstrap="./vendor/autoload.php"
          colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="false"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -17,4 +18,7 @@
     <php>
         <!-- <env name="CACHE_DRIVER" value="array"/> -->
     </php>
+    <logging>
+        <log type="testdox-text" target="tests/reports/testdox/executed.txt"/>
+    </logging>
 </phpunit>

@@ -4,6 +4,7 @@ namespace Braghetto\Hokoml;
 use Braghetto\Hokoml\App;
 use Braghetto\Hokoml\Product;
 use Braghetto\Hokoml\Question;
+use Braghetto\Hokoml\Order;
 use Braghetto\Hokoml\HttpClient;
 
 /**
@@ -43,7 +44,7 @@ class Hokoml
     /**
      * A Question instance.
      *
-     * @var \Braghetto\Hokoml\QuestionInterface
+     * @var \Braghetto\Hokoml\Question
      */
     private $question;
 
@@ -53,6 +54,13 @@ class Hokoml
      * @var \Braghetto\Hokoml\UserInterface
      */
     private $user;
+
+    /**
+     * A Order instance.
+     *
+     * @var \Braghetto\Hokoml\Order
+     */
+    private $order;
 
     /**
      * Create a new \Braghetto\Hokoml\Hokoml instance.
@@ -147,7 +155,7 @@ class Hokoml
     /**
      * Return a Question instance.
      *
-     * @return \Braghetto\Hokoml\QuestionInterface
+     * @return \Braghetto\Hokoml\Question
      */
     public function question()
     {
@@ -168,6 +176,19 @@ class Hokoml
             $this->user = new User($this->http, $this->app);
         }
         return $this->user;
+    }
+
+    /**
+     * Return an Order instance.
+     *
+     * @return \Braghetto\Hokoml\Order
+     */
+    public function order()
+    {
+        if (!isset($this->order)) {
+            $this->order = new Order($this->http, $this->app);
+        }
+        return $this->order;
     }
 
     /**

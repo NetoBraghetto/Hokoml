@@ -3,3 +3,5 @@
 /tests/web/*
 !/tests/web/handle-auth-return-url.php
 !/tests/web/handle-notification-return-url.php
+
+/tests/reports/*
