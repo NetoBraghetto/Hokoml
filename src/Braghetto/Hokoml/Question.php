@@ -5,14 +5,8 @@ namespace Braghetto\Hokoml;
 * Question
 */
 
-class Question implements QuestionInterface, AppRefreshableInterface
+class Question implements AppRefreshableInterface
 {
-    /**
-     * The api base url.
-     *
-     * @var string
-     */
-    private $api_url;
 
     /**
      * The http client.
@@ -39,7 +33,6 @@ class Question implements QuestionInterface, AppRefreshableInterface
     {
         $this->http = $http_client;
         $this->app = $app;
-        $this->api_url = $this->app->getApiUrl();
     }
 
     /**
@@ -50,7 +43,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function find($id)
     {
-        return $this->http->get($this->api_url . '/questions/' . $id, ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl("/questions/$id"), ['access_token' => $this->app->getAccessToken()]);
     }
 
     /**
@@ -62,7 +55,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function ask($product_id, $question)
     {
-        return $this->http->post($this->api_url . '/questions/' . $product_id, ['access_token' => $this->app->getAccessToken()], [
+        return $this->http->post($this->app->getApiUrl("/questions/{$product_id}"), ['access_token' => $this->app->getAccessToken()], [
             'text' => $question,
             'item_id' => $product_id
         ]);
@@ -77,7 +70,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function answer($question_id, $answer)
     {
-        return $this->http->post($this->api_url . '/answers', ['access_token' => $this->app->getAccessToken()], [
+        return $this->http->post($this->app->getApiUrl('/answers'), ['access_token' => $this->app->getAccessToken()], [
             'text' => $answer,
             'question_id' => $question_id
         ]);
@@ -98,7 +91,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
         if (isset($sort)) {
             $qs['sort'] = $sort;
         }
-        return $this->http->get($this->api_url . '/questions/search', $qs);
+        return $this->http->get($this->app->getApiUrl('/questions/search'), $qs);
     }
 
     /**
@@ -109,7 +102,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function blockUser($user_id)
     {
-        return $this->http->post($this->api_url . '/users/' . $this->app->getSellerId() . '/questions_blacklist', ['access_token' => $this->app->getAccessToken()], [
+        return $this->http->post($this->app->getApiUrl("/users/{$this->app->getSellerId()}/questions_blacklist"), ['access_token' => $this->app->getAccessToken()], [
             'user_id' => $user_id
         ]);
     }
@@ -122,7 +115,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function unblockUser($user_id)
     {
-        return $this->http->delete($this->api_url . '/users/' . $this->app->getSellerId() . '/questions_blacklist/' . $user_id, [
+        return $this->http->delete($this->app->getApiUrl("/users/{$this->app->getSellerId()}/questions_blacklist/$user_id"), [
             'access_token' => $this->app->getAccessToken()
         ]);
     }
@@ -134,7 +127,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
      */
     public function blockedUsers()
     {
-        return $this->http->get($this->api_url . '/users/' . $this->app->getSellerId() . '/questions_blacklist', [
+        return $this->http->get($this->app->getApiUrl("/users/{$this->app->getSellerId()}/questions_blacklist"), [
             'access_token' => $this->app->getAccessToken()
         ]);
     }
@@ -153,7 +146,7 @@ class Question implements QuestionInterface, AppRefreshableInterface
         if (isset($sort)) {
             $qs['sort'] = $sort;
         }
-        return $this->http->get($this->api_url . '/my/received_questions/search', $qs);
+        return $this->http->get($this->app->getApiUrl('/my/received_questions/search'), $qs);
     }
 
     /**

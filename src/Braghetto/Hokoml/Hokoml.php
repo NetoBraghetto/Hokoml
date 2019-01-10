@@ -3,8 +3,8 @@ namespace Braghetto\Hokoml;
 
 use Braghetto\Hokoml\App;
 use Braghetto\Hokoml\Product;
-use Braghetto\Hokoml\Category;
 use Braghetto\Hokoml\Question;
+use Braghetto\Hokoml\Order;
 use Braghetto\Hokoml\HttpClient;
 
 /**
@@ -37,21 +37,14 @@ class Hokoml
     /**
      * A Product instance.
      *
-     * @var \Braghetto\Hokoml\ProductInterface
+     * @var \Braghetto\Hokoml\Product
      */
     private $product;
 
     /**
-     * A Category instance.
-     *
-     * @var \Braghetto\Hokoml\CategoryInterface
-     */
-    private $category;
-
-    /**
      * A Question instance.
      *
-     * @var \Braghetto\Hokoml\QuestionInterface
+     * @var \Braghetto\Hokoml\Question
      */
     private $question;
 
@@ -61,6 +54,13 @@ class Hokoml
      * @var \Braghetto\Hokoml\UserInterface
      */
     private $user;
+
+    /**
+     * A Order instance.
+     *
+     * @var \Braghetto\Hokoml\Order
+     */
+    private $order;
 
     /**
      * Create a new \Braghetto\Hokoml\Hokoml instance.
@@ -121,9 +121,6 @@ class Hokoml
         if (isset($this->product)) {
             $this->product->refreshApp($this->app);
         }
-        if (isset($this->category)) {
-            $this->category->refreshApp($this->app);
-        }
         if (isset($this->question)) {
             $this->question->refreshApp($this->app);
         }
@@ -156,22 +153,9 @@ class Hokoml
     }
 
     /**
-     * Return a Category instance.
-     *
-     * @return \Braghetto\Hokoml\CategoryInterface
-     */
-    public function category()
-    {
-        if (!isset($this->category)) {
-            $this->category = new Category($this->http, $this->app);
-        }
-        return $this->category;
-    }
-
-    /**
      * Return a Question instance.
      *
-     * @return \Braghetto\Hokoml\QuestionInterface
+     * @return \Braghetto\Hokoml\Question
      */
     public function question()
     {
@@ -192,6 +176,19 @@ class Hokoml
             $this->user = new User($this->http, $this->app);
         }
         return $this->user;
+    }
+
+    /**
+     * Return an Order instance.
+     *
+     * @return \Braghetto\Hokoml\Order
+     */
+    public function order()
+    {
+        if (!isset($this->order)) {
+            $this->order = new Order($this->http, $this->app);
+        }
+        return $this->order;
     }
 
     /**

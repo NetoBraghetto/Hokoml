@@ -15,7 +15,7 @@ interface AppInterface
 
     public function getCountry();
 
-    public function getApiUrl();
+    public function getApiUrl(string $append = '');
     
     public function getAccessToken();
 }

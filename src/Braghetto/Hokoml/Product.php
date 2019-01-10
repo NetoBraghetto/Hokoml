@@ -5,15 +5,8 @@ namespace Braghetto\Hokoml;
 * Product
 */
 
-class Product implements ProductInterface, AppRefreshableInterface
+class Product implements AppRefreshableInterface
 {
-    /**
-     * The api base url.
-     *
-     * @var string
-     */
-    private $api_url;
-
     /**
      * The http client.
      *
@@ -43,6 +36,7 @@ class Product implements ProductInterface, AppRefreshableInterface
         'shipping',
         'variations',
         'status',
+        'deleted',
     ];
 
     /**
@@ -56,18 +50,28 @@ class Product implements ProductInterface, AppRefreshableInterface
     {
         $this->http = $http_client;
         $this->app = $app;
-        $this->api_url = $this->app->getApiUrl();
+    }
+
+    /**
+     * Validates the data.
+     *
+     * @param array $data
+     * @return array with body and http_code keys.
+     */
+    public function validate(array $data)
+    {
+        return $this->http->post($this->app->getApiUrl('/items/validate'), ['access_token' => $this->app->getAccessToken()], $data);
     }
 
     /**
      * Create a new product.
      *
-     * @param array $item
+     * @param array $data
      * @return array with body and http_code keys.
      */
-    public function create(array $item)
+    public function create(array $data)
     {
-        return $this->http->post($this->api_url . '/items', ['access_token' => $this->app->getAccessToken()], $item);
+        return $this->http->post($this->app->getApiUrl('/items'), ['access_token' => $this->app->getAccessToken()], $data);
     }
 
     /**
@@ -83,17 +87,50 @@ class Product implements ProductInterface, AppRefreshableInterface
             $changes = array_intersect_key($changes, array_flip($this->allowed_changes));
 
             if (isset($changes['description'])) {
-                $resp = $this->updateDescription($id, $changes['description']);
+                $descriptionResponse = $this->updateDescription($id, $changes['description']);
                 unset($changes['description']);
-                if ($resp['http_code'] !== 200) {
-                    return $resp;
+                if ($descriptionResponse['http_code'] !== 200 || empty($changes)) {
+                    return $descriptionResponse;
                 }
             }
-
-            $changes = $this->stripeNotModifiableFields($changes);
         }
+        $response = $this->http->put($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()], $changes);
+        if ($response['http_code'] !== 200) {
+            return $response;
+        }
+        if (isset($descriptionResponse)) {
+            $response['body']['descriptions']['plain_text'] = $descriptionResponse['body']['plain_text'];
+        }
+        return $response;
+    }
 
-        return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], $changes);
+    /**
+     * Update a product price.
+     *
+     * @param string $id
+     * @param float $price
+     * @return array with body and http_code keys.
+     */
+    public function updatePrice(string $id, float $price)
+    {
+        $response = $this->find($id);
+        if ($response['http_code'] !== 200) {
+            return $response;
+        }
+        $product = $response['body'];
+        $data = [];
+        if (empty($product['variations'])) {
+            $data = ['price' => $price];
+        } else {
+            $data = ['variations' => []];
+            foreach ($product['variations'] as $variation) {
+                $data['variations'][] = [
+                    'id' => $variation['id'],
+                    'price' => $price,
+                ];
+            }
+        }
+        return $this->update($id, $data);
     }
 
     /**
@@ -105,21 +142,21 @@ class Product implements ProductInterface, AppRefreshableInterface
      */
     public function updateDescription(string $id, array $description)
     {
-        return $this->http->put($this->api_url . '/items/' . $id . '/description', ['access_token' => $this->app->getAccessToken()], $description);
+        return $this->http->put($this->app->getApiUrl("/items/{$id}/description"), ['access_token' => $this->app->getAccessToken()], $description);
     }
 
-    /**
-     * Update a product.
-     *
-     * @param string $id
-     * @param array $changes
-     * @return array with body and http_code keys.
-     */
-    public function updateVariation($id, $product_id, array $changes)
-    {
-        $url = $this->api_url . '/items/' . $product_id . '/variations/' . $id;
-        return $this->http->put($url, ['access_token' => $this->app->getAccessToken()], $changes);
-    }
+    // /**
+    //  * Update a product.
+    //  *
+    //  * @param string $id
+    //  * @param array $changes
+    //  * @return array with body and http_code keys.
+    //  */
+    // public function updateVariation($id, $product_id, array $changes)
+    // {
+    //     $url = $this->api_url . '/items/' . $product_id . '/variations/' . $id;
+    //     return $this->http->put($url, ['access_token' => $this->app->getAccessToken()], $changes);
+    // }
 
     /**
      * Search for a product.
@@ -129,7 +166,7 @@ class Product implements ProductInterface, AppRefreshableInterface
      */
     public function find($id)
     {
-        return $this->http->get($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()]);
     }
 
     /**
@@ -182,7 +219,7 @@ class Product implements ProductInterface, AppRefreshableInterface
      */
     public function relist($id, $price, $quantity = 1, $listing_type = 'free')
     {
-        return $this->http->post($this->api_url . '/items/' . $id . '/relist', ['access_token' => $this->app->getAccessToken()], [
+        return $this->http->post($this->app->getApiUrl("/items/{$id}/relist"), ['access_token' => $this->app->getAccessToken()], [
             'price' => $price,
             'quantity' => $quantity,
             'listing_type_id' => $listing_type,
@@ -202,32 +239,7 @@ class Product implements ProductInterface, AppRefreshableInterface
         ]);
     }
 
-    /**
-     * Get a list of Mercado livre listing types.
-     *
-     * @return array with body and http_code keys.
-     */
-
-    public function listingTypes()
-    {
-        return $this->http->get($this->api_url . '/sites/' . $this->app->getCountry() . '/listing_types');
-    }
-
-    /**
-     * Update the variations of a product.
-     *
-     * @param string $id
-     * @param array $variations
-     * @return array with body and http_code keys.
-     */
-
-    public function updateVariations($id, array $variations)
-    {
-        return $this->http->put($this->api_url . '/items/' . $id, ['access_token' => $this->app->getAccessToken()], [
-            'variations' => $variations
-        ]);
-    }
-
+    
     /**
      * Refresh the App instance.
      *
@@ -236,32 +248,5 @@ class Product implements ProductInterface, AppRefreshableInterface
     public function refreshApp($app)
     {
         $this->app = $app;
-    }
-
-    /**
-     * Strie unecessary|not modifiable fields
-     *
-     * @return array $data
-     */
-    private function stripeNotModifiableFields($changes)
-    {
-        if (isset($changes['variations'])) {
-            if (isset($changes['available_quantity'])) {
-                unset($changes['available_quantity']);
-            }
-            if (isset($changes['price'])) {
-                unset($changes['price']);
-            }
-        }
-
-        if (isset($changes['shipping'])) {
-            if (isset($changes['shipping']['tags'])) {
-                unset($changes['shipping']['tags']);
-            }
-            if (empty($changes['shipping']['dimensions'])) {
-                unset($changes['shipping']['dimensions']);
-            }
-        }
-        return $changes;
     }
 }

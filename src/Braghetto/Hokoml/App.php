@@ -191,9 +191,9 @@ class App implements AppInterface
      *
      * @return string
      */
-    public function getApiUrl()
+    public function getApiUrl(string $append = '')
     {
-        return $this->api_url;
+        return $this->api_url . $append;
     }
 
     /**
@@ -234,5 +234,54 @@ class App implements AppInterface
     public function getSellerId()
     {
         return $this->seller_id;
+    }
+
+    /**
+     * Get a list of Mercado livre listing types.
+     *
+     * @return array with body and http_code keys.
+     */
+
+    public function getListingTypes()
+    {
+        return $this->http->get($this->api_url . '/sites/' . $this->getCountry() . '/listing_types');
+    }
+
+    /**
+     * Get a list of categories from Mercado livre. If a category id is sent as
+     * param the method returns subcategories.
+     *
+     * @param string $category_id
+     * @return array
+     */
+    public function getCategories($category_id = null)
+    {
+        $qurl = $this->api_url;
+        $qurl .= isset($category_id) ? '/categories/' . $category_id : '/sites/' . $this->getCountry() . '/categories';
+        return $this->http->get($qurl);
+    }
+    
+    /**
+     * Return a Mercado livre category prediction based on the title.
+     *
+     * @param string $title
+     * @return array
+     */
+    public function predictCategory(string $title)
+    {
+        return $this->http->get($this->api_url . '/sites/' . $this->getCountry() . '/category_predictor/predict', [
+            'title' => $title
+        ]);
+    }
+    
+    /**
+     * Return a Mercado livre category prediction based on the title.
+     *
+     * @param string $title
+     * @return array
+     */
+    public function categoryAttributes($category_id)
+    {
+        return $this->http->get($this->api_url . '/categories/' . $category_id . '/attributes');
     }
 }
