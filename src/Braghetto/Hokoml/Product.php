@@ -37,6 +37,7 @@ class Product implements AppRefreshableInterface
         'variations',
         'status',
         'deleted',
+        'attributes',
     ];
 
     /**
