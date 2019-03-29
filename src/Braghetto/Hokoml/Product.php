@@ -94,6 +94,8 @@ class Product implements AppRefreshableInterface
                     return $descriptionResponse;
                 }
             }
+            
+            $changes = $this->stripeNotModifiableFields($changes);
         }
         $response = $this->http->put($this->app->getApiUrl("/items/{$id}"), ['access_token' => $this->app->getAccessToken()], $changes);
         if ($response['http_code'] !== 200) {
@@ -260,5 +262,31 @@ class Product implements AppRefreshableInterface
     public function refreshApp($app)
     {
         $this->app = $app;
+    }
+
+    /**
+     * Stripe unecessary|not modifiable fields
+     *
+     * @return array $data
+     */
+    private function stripeNotModifiableFields($changes)
+    {
+        if (isset($changes['variations'])) {
+            if (isset($changes['available_quantity'])) {
+                unset($changes['available_quantity']);
+            }
+            if (isset($changes['price'])) {
+                unset($changes['price']);
+            }
+        }
+        if (isset($changes['shipping'])) {
+            if (isset($changes['shipping']['tags'])) {
+                unset($changes['shipping']['tags']);
+            }
+            if (empty($changes['shipping']['dimensions'])) {
+                unset($changes['shipping']['dimensions']);
+            }
+        }
+        return $changes;
     }
 }

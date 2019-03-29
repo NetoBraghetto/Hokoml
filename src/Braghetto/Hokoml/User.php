@@ -82,10 +82,11 @@ class User implements AppRefreshableInterface
      * @param array $filters
      * @return array with body and http_code keys.
      */
-    public function products(array $filters = [])
+    public function products($seller_id = null, array $filters = [])
     {
+        $seller_id = isset($seller_id) ? $seller_id : $this->app->getSellerId();
         $filters = array_merge($filters, ['access_token' => $this->app->getAccessToken()]);
-        return $this->http->get($this->app->getApiUrl('/users/' . $this->app->getSellerId() . '/items/search'), $filters);
+        return $this->http->get($this->app->getApiUrl("/users/$seller_id/items/search"), $filters);
     }
 
     /**
