@@ -240,6 +240,17 @@ class Product implements AppRefreshableInterface
         ]);
     }
 
+    /**
+     * Search for products.
+     *
+     * @param array $filters
+     * @return array with body and http_code keys.
+     */
+    public function search(array $filters)
+    {
+        return $this->http->get($this->app->getApiUrl('/sites/' . $this->getCountry() . '/search'), $filters);
+    }
+
     
     /**
      * Refresh the App instance.

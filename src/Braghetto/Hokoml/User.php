@@ -5,14 +5,8 @@ namespace Braghetto\Hokoml;
 * User
 */
 
-class User implements UserInterface, AppRefreshableInterface
+class User implements AppRefreshableInterface
 {
-    /**
-     * The http client.
-     *
-     * @var \Braghetto\Hokoml\HttpClientInterface
-     */
-    private $api_url;
 
     /**
      * An App instance.
@@ -39,7 +33,6 @@ class User implements UserInterface, AppRefreshableInterface
     {
         $this->http = $http_client;
         $this->app = $app;
-        $this->api_url = $this->app->getApiUrl();
     }
 
     /**
@@ -49,7 +42,7 @@ class User implements UserInterface, AppRefreshableInterface
      */
     public function me()
     {
-        return $this->http->get($this->api_url . '/users/me', ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl('/users/me'), ['access_token' => $this->app->getAccessToken()]);
     }
 
     /**
@@ -60,7 +53,7 @@ class User implements UserInterface, AppRefreshableInterface
      */
     public function find($user_id = null)
     {
-        return $this->http->get($this->api_url . '/users/' . $user_id, ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl("/users/$user_id"), ['access_token' => $this->app->getAccessToken()]);
     }
 
     /**
@@ -70,7 +63,7 @@ class User implements UserInterface, AppRefreshableInterface
      */
     public function addresses()
     {
-        return $this->http->get($this->api_url . '/users/' . $this->app->getSellerId() . '/addresses', ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl('/users/' . $this->app->getSellerId() . '/addresses'), ['access_token' => $this->app->getAccessToken()]);
     }
 
     /**
@@ -80,7 +73,19 @@ class User implements UserInterface, AppRefreshableInterface
      */
     public function acceptedPaymentMethods()
     {
-        return $this->http->get($this->api_url . '/users/' . $this->app->getSellerId() . '/accepted_payment_methods', ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl('/users/' . $this->app->getSellerId() . '/accepted_payment_methods'), ['access_token' => $this->app->getAccessToken()]);
+    }
+
+    /**
+     * Get products from account
+     *
+     * @param array $filters
+     * @return array with body and http_code keys.
+     */
+    public function products(array $filters = [])
+    {
+        $filters = array_merge($filters, ['access_token' => $this->app->getAccessToken()]);
+        return $this->http->get($this->app->getApiUrl('/users/' . $this->app->getSellerId() . '/items/search'), $filters);
     }
 
     /**
