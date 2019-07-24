@@ -250,7 +250,7 @@ class Product implements AppRefreshableInterface
      */
     public function search(array $filters)
     {
-        return $this->http->get($this->app->getApiUrl('/sites/' . $this->getCountry() . '/search'), $filters);
+        return $this->http->get($this->app->getApiUrl('/sites/' . $this->app->getCountry() . '/search'), $filters);
     }
 
     

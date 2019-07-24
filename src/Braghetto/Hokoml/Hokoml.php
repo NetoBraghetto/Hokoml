@@ -63,6 +63,13 @@ class Hokoml
     private $order;
 
     /**
+     * A Shipping instance.
+     *
+     * @var \Braghetto\Hokoml\Shipping
+     */
+    private $shipping;
+
+    /**
      * Create a new \Braghetto\Hokoml\Hokoml instance.
      *
      * @param array $config
@@ -127,6 +134,9 @@ class Hokoml
         if (isset($this->user)) {
             $this->user->refreshApp($this->app);
         }
+        if (isset($this->shipping)) {
+            $this->shipping->refreshApp($this->app);
+        }
     }
 
     /**
@@ -189,6 +199,19 @@ class Hokoml
             $this->order = new Order($this->http, $this->app);
         }
         return $this->order;
+    }
+
+    /**
+     * Return an Shipping instance.
+     *
+     * @return \Braghetto\Hokoml\Shipping
+     */
+    public function shipping()
+    {
+        if (!isset($this->shipping)) {
+            $this->shipping = new Shipping($this->http, $this->app);
+        }
+        return $this->shipping;
     }
 
     /**
