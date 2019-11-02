@@ -6,6 +6,7 @@ use Braghetto\Hokoml\Product;
 use Braghetto\Hokoml\Question;
 use Braghetto\Hokoml\Order;
 use Braghetto\Hokoml\HttpClient;
+use Braghetto\Hokoml\SizeGuide;
 
 /**
 * Hokoml
@@ -19,6 +20,13 @@ class Hokoml
      * @var array
      */
     private $config;
+
+    /**
+     * Map of instances.
+     *
+     * @var array
+     */
+    private $instacesMap = [];
 
     /**
      * The http client.
@@ -68,6 +76,13 @@ class Hokoml
      * @var \Braghetto\Hokoml\Shipping
      */
     private $shipping;
+
+    /**
+     * A SizeGuide instance.
+     *
+     * @var \Braghetto\Hokoml\SizeGuide
+     */
+    private $sizeGuide;
 
     /**
      * Create a new \Braghetto\Hokoml\Hokoml instance.
@@ -125,17 +140,8 @@ class Hokoml
      */
     private function resetAppInstance()
     {
-        if (isset($this->product)) {
-            $this->product->refreshApp($this->app);
-        }
-        if (isset($this->question)) {
-            $this->question->refreshApp($this->app);
-        }
-        if (isset($this->user)) {
-            $this->user->refreshApp($this->app);
-        }
-        if (isset($this->shipping)) {
-            $this->shipping->refreshApp($this->app);
+        foreach ($this->instacesMap as $instanceName) {
+            $this->$instanceName->refreshApp($this->app);
         }
     }
 
@@ -158,6 +164,7 @@ class Hokoml
     {
         if (!isset($this->product)) {
             $this->product = new Product($this->http, $this->app);
+            $this->instacesMap[] = 'product';
         }
         return $this->product;
     }
@@ -171,6 +178,7 @@ class Hokoml
     {
         if (!isset($this->question)) {
             $this->question = new Question($this->http, $this->app);
+            $this->instacesMap[] = 'question';
         }
         return $this->question;
     }
@@ -184,6 +192,7 @@ class Hokoml
     {
         if (!isset($this->user)) {
             $this->user = new User($this->http, $this->app);
+            $this->instacesMap[] = 'user';
         }
         return $this->user;
     }
@@ -197,6 +206,7 @@ class Hokoml
     {
         if (!isset($this->order)) {
             $this->order = new Order($this->http, $this->app);
+            $this->instacesMap[] = 'order';
         }
         return $this->order;
     }
@@ -210,8 +220,23 @@ class Hokoml
     {
         if (!isset($this->shipping)) {
             $this->shipping = new Shipping($this->http, $this->app);
+            $this->instacesMap[] = 'shipping';
         }
         return $this->shipping;
+    }
+
+    /**
+     * Return an SizeGuide instance.
+     *
+     * @return \Braghetto\Hokoml\SizeGuide
+     */
+    public function sizeGuide()
+    {
+        if (!isset($this->sizeGuide)) {
+            $this->sizeGuide = new SizeGuide($this->http, $this->app);
+            $this->instacesMap[] = 'sizeGuide';
+        }
+        return $this->sizeGuide;
     }
 
     /**

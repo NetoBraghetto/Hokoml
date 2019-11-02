@@ -12,7 +12,7 @@ class AppTest extends AbstractTest
         $this->assertEquals('/authorization', $parsedAuthURL['path']);
         if (empty($this->session['mercado_livre'])) {    
             echo PHP_EOL . '/* ======== Visit de URL to authorize the app and restart the tests ========= */';
-            echo PHP_EOL . $authURL;
+            echo PHP_EOL . urldecode($authURL);
             echo PHP_EOL . '/* ========================================================================== */';
             exit;
         }
