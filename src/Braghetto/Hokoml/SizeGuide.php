@@ -131,6 +131,22 @@ class SizeGuide implements AppRefreshableInterface
     }
 
     /**
+     * Associate items to the size guide
+     *
+     * @param string $id
+     * @param array $items
+     * @return array
+     */
+    public function associateItems($id, array $items)
+    {
+        return $this->http->put(
+            $this->app->getApiUrl("/size_charts/$id/items"),
+            ['access_token' => $this->app->getAccessToken()],
+            ['items' => $items]
+        );
+    }
+
+    /**
      * Refresh the App instance.
      *
      * @return void
