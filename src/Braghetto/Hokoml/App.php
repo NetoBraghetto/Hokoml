@@ -115,14 +115,13 @@ class App implements AppInterface
      *
      * @return string
      */
-    public function getAuthUrl($redirect_uri = null)
+    public function getAuthUrl($redirect_uri = null, $merge = [])
     {
-        $params = [
+        $params = array_merge([
             'client_id' => $this->app_id,
             'response_type' => 'code',
             'redirect_uri' => isset($redirect_uri) ? $redirect_uri : $this->redirect_uri,
-
-        ];
+        ], $merge);
         return $this->auth_urls[$this->country] . '/authorization?' . http_build_query($params);
     }
 
@@ -131,15 +130,16 @@ class App implements AppInterface
      *
      * @return array
      */
-    public function authorize($code)
+    public function authorize($code, $merge = [])
     {
-        $data = [
+        $data = array_merge([
             'grant_type' => 'authorization_code',
             'client_id' => $this->app_id,
             'client_secret' => $this->secret_key,
             'code' => $code,
             'redirect_uri' => $this->redirect_uri
-        ];
+        ], $merge);
+        
         $response = $this->http->post($this->api_url . '/oauth/token?' . http_build_query($data));
         $this->resetAccessTokenAndSellerId($response);
         return $response;
@@ -150,14 +150,14 @@ class App implements AppInterface
      *
      * @return array
      */
-    public function refreshAccessToken($refresh_token)
+    public function refreshAccessToken($refresh_token, $merge = [])
     {
-        $data = [
+        $data = array_merge([
             'grant_type' => 'refresh_token',
             'client_id' => $this->app_id,
             'client_secret' => $this->secret_key,
             'refresh_token' => $refresh_token
-        ];
+        ], $merge);
         $response = $this->http->post($this->api_url . '/oauth/token', $data);
         $this->resetAccessTokenAndSellerId($response);
         return $response;
